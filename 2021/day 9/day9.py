@@ -36,7 +36,7 @@ print(sum(low_values) + len(low_values))
 
 basins = []
 
-#depth-first search
+#iterative depth-first search
 for p in low_address:
     basin = []
     visited = set()
