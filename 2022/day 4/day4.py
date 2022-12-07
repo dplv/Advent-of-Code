@@ -10,13 +10,13 @@ count_part1, count_part2 = 0, 0
 for line in lines:
     line = line.replace('\n', '').split(',')
     elf1, elf2 = [elf.split('-') for elf in line]
-    elf1 = [int(x) for x in elf1]
-    elf2 = [int(x) for x in elf2]
+    a, b = [int(x) for x in elf1]
+    c, d = [int(x) for x in elf2]
 
-    if elf1[0] >= elf2[0] and elf1[1] <= elf2[1] or elf2[0] >= elf1[0] and elf2[1] <= elf1[1]:
+    if a >= c and b <= d or c >= a and d <= b:
         count_part1 += 1
 
-    if elf1[0] >= elf2[0] and elf1[0] <= elf2[1] or elf2[0] >= elf1[0] and elf2[0] <= elf1[1]:
+    if a >= c and a <= d or c >= a and c <= b:
         count_part2 += 1
         
 print(count_part1)
