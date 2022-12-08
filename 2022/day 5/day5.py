@@ -1,5 +1,4 @@
 import os
-from collections import deque 
 
 dir = os.path.dirname(__file__)
 data = open(dir + '\input.txt', 'r').read().splitlines()
