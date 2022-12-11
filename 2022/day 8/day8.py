@@ -41,68 +41,67 @@ def check_trees(forest, transposed = False):
 
 def all_visible_trees():
     global VISIBLE_TREES
-    forest = read_input()
-    check_trees(forest)
-    check_trees(transpose(forest), True)
+    global FOREST
+    check_trees(FOREST)
+    check_trees(transpose(FOREST), True)
     return len(VISIBLE_TREES)
 
 
+def prod(l: list) -> int:
+    result = 1
+    for i in l:
+        result *= i
+    return result
+
+
+def count_visible_trees(tree, trees):
+    count = 0
+    for t in trees:
+        if t < tree:
+            count += 1
+        else:
+            count += 1
+            break
+    return count
+
+
+def scores(f, transposed = False):
+    global SCORES
+    for i in range(len(f)):
+        for j in range(len(f[0])):
+            if i == 0 or j == 0 or i == len(f) - 1 or j == len(f[0]) - 1:
+                score = 0
+            else:
+                tree = f[i][j]
+                # if (i, j) == (3, 2) or (transposed and (i, j) == (2, 3)):
+                #     print(i, j)
+                trees_left = f[i][:j][::-1]
+                trees_right = f[i][j+1:]
+
+                score_left = count_visible_trees(tree, trees_left)
+                score_right = count_visible_trees(tree, trees_right)
+
+                if transposed:
+                    SCORES[(j, i)].append(score_left)
+                    SCORES[(j, i)].append(score_right)
+                else:
+                    SCORES[(i, j)].append(score_left)
+                    SCORES[(i, j)].append(score_right)
+    return
+
+
+def best_view():
+    global SCORES
+    global FOREST
+    scores(FOREST)
+    scores(transpose(FOREST), True)
+    return max([prod(x) for x in SCORES.values()])
+
+
 if __name__ == '__main__':
-    # VISIBLE_TREES = set()
-    # print(all_visible_trees())
-
-    forest = read_input()
-
+    VISIBLE_TREES = set()
     SCORES = defaultdict(list)
+    FOREST = read_input()
 
-    for i in range(len(forest)):
-        for j in range(len(forest[0])):
-            if i == 0 or j == 0 or i == len(forest) - 1 or j == len(forest[0]) - 1:
-                score = 0
-            else:
-                tree = forest[i][j]
-                trees_left = forest[i][:j][::-1]
-                score_left = len([i for i, v in enumerate(trees_left) if v >= tree])
-                if score_left == 0:
-                    score_left = len(trees_left)
-                else:
-                    score_left += 1 if score_left < len(trees_left) else 0
-                trees_right = forest[i][j+1:]
-                score_right = len([i for i, v in enumerate(trees_right) if v >= tree])
-                if score_right == 0:
-                    score_right = len(trees_left)
-                else:
-                    score_right += 1 if score_right < len(trees_right) else 0
-
-                SCORES[(i,j)].append(score_left)
-                SCORES[(i,j)].append(score_right)
-
-    print(forest)
-    forest = transpose(forest)
-
-    for i in range(len(forest)):
-        for j in range(len(forest[0])):
-            if i == 0 or j == 0 or i == len(forest) - 1 or j == len(forest[0]) - 1:
-                score = 0
-            else:
-                tree = forest[i][j]
-                trees_left = forest[i][:j][::-1]
-                score_left = len([i for i, v in enumerate(trees_left) if v >= tree])
-                if score_left == 0:
-                    score_left = len(trees_left)
-                else:
-                    score_left += 1 if score_left < len(trees_left) else 0
-                trees_right = forest[i][j+1:]
-                score_right = len([i for i, v in enumerate(trees_right) if v >= tree])
-                if score_right == 0:
-                    score_right = len(trees_left)
-                else:
-                    score_right += 1 if score_right < len(trees_right) else 0
-
-                SCORES[(j,i)].append(score_left)
-                SCORES[(j,i)].append(score_right)
-
-
-
-
-    print(SCORES)
+    print(all_visible_trees()) #part 1
+    print(best_view()) #part 2
