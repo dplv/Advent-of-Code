@@ -36,7 +36,7 @@ DIRS = {
 
 HEAD = (0, 0)
 TAIL = (0, 0)
-
+    
 TAILS = list()
 
 # print(motions)
