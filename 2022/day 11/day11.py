@@ -27,7 +27,6 @@ def read_input():
             monkey.test_true = int(lines[i + 4].replace('\n', '').rsplit()[-1])
             monkey.test_false = int(lines[i + 5].replace('\n', '').rsplit()[-1])
             MONKEYS.append(monkey)
-
         try:
             _ = lines[i + 7]
         except IndexError:
@@ -37,29 +36,22 @@ def read_input():
 
 if __name__ == '__main__':
     MONKEYS = read_input()
-    ROUNDS = 20 
+    ROUNDS = 10000
 
     mod_factor = math.prod([monkey.test for monkey in MONKEYS])
+
     for round in range(ROUNDS):
-        if round % 1000 == 0:
-            print(round)
-        for m in MONKEYS:
-            # print(m.id, m.test, m.test_true, type(m.test_true))
-            for item in m.items:
-                m.inspected += 1
-                worry_level = eval(f'{item} {m.operation}')
+        for monkey in MONKEYS:
+            for item in monkey.items:
+                monkey.inspected += 1
+                worry_level = eval(f'{item} {monkey.operation}')
                 worry_level %= mod_factor
-                # worry_level = worry_level // 3
-                if worry_level % m.test == 0:
-                    MONKEYS[m.test_true].items.append(worry_level)
+                # worry_level = worry_level // 3 #part 1
+                if worry_level % monkey.test == 0:
+                    MONKEYS[monkey.test_true].items.append(worry_level)
                 else:
-                    MONKEYS[m.test_false].items.append(worry_level)
+                    MONKEYS[monkey.test_false].items.append(worry_level)
+            monkey.items.clear()
 
-                # print(m.id, item, '|', eval(f'{item} {m.operation}'))
-            m.items.clear()
-
-    for m in MONKEYS:
-        print(f'Monkey {m.id}: {m.items} {m.inspected}')
-
-    most_active = sorted([m.inspected for m in MONKEYS])[-2:]
+    most_active = sorted([monkey.inspected for monkey in MONKEYS])[-2:]
     print(most_active[0] * most_active[1]) #part 1
