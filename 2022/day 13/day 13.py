@@ -8,110 +8,50 @@ def read_input():
     return lines
 
 
+def compare_packets(pair: list) -> bool:
+    left, right = [*pair]
+    result = None
+
+    if isinstance(left, int) and isinstance(right, int) and left != right:
+        result = left < right
+    
+    elif isinstance(left, list) and isinstance(right, list):
+        for i in range(max(len(left), len(right))):
+            if i > len(left) - 1:
+                result = True
+            elif i > len(right) - 1:
+                result = False
+            else:
+                result = compare_packets([left[i], right[i]])
+            
+            if result is not None:
+                return result
+
+    elif isinstance(left, list) and not isinstance(right, list):
+        result = compare_packets([left, [right]])
+    
+    elif not isinstance(left, list) and isinstance(right, list):
+        result = compare_packets([[left], right])
+    
+    if result is not None:
+        return result
+        
+
+def bubble_sort(l: list) -> list:
+    for _ in range(len(l)):
+        sorted = False
+        for j in range(len(l)-1):
+            if not compare_packets([l[j], l[j+1]]):
+                l[j], l[j+1] = l[j+1], l[j]
+                sorted = True
+        if not sorted:
+            break
+    return l
+
 if __name__ == '__main__':
     data = read_input()
+    print(sum([i + 1 for i, pair in enumerate(data) if compare_packets([*map(eval, pair)])])) #part 1
 
-    def compare(left, right):
-        if type(left) == int and type(right) == int:
-            return left < right
-        else:
-            if type(left) == list and type(right) == list:
-                if len(right) > len(left):
-                    return False
-                elif len(right) < len(left):
-                    return True
-                else:
-                    for i in range(len(left)):
-                        compare(left[i], right[i])
-
-            elif type(left) == list and isinstance(right, list) == False:
-                compare(left[i], [right[i]])
-            elif isinstance(type(left), list) == False and isinstance(right, list) == True:
-                compare([left[i]], right[i])
-
-    for pair in data:
-        left, right = map(eval, pair)
-        print(compare(left, right))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        # left, right = map(eval, pair)
-        # print(left, any([type(e) == list for e in left]))
-        # print(right, any([type(e) == list for e in right]))
-
-        # if type(left) == int and type(right) == int: #both integers
-        #     if left < right:
-        #         print('right order')
-        #     else:
-        #         print('wrong order')
-        # elif type(left) == list and type(right) == list: #both lists
-
-        #     if len(right) > len(left):
-        #         print('wrong order')
-        #     elif len(right) < len(left):
-        #         print('right order')
-        #     else:
-        #         for i in range(len(left)):
-        #             if left[i] < right[i]:
-        #                 print('right order')
-        #                 break
-        #             elif left[i] > right[i]:
-        #                 print('wrong order')
-        #                 break
-
-        # else: #one integer, one list
-        #     left = [left] if type(left) == int else left
-        #     left = [right] if type(right) == int else right
-
-        #     if len(right) > len(left):
-        #         print('wrong order')
-        #     elif len(right) < len(left):
-        #         print('right order')
-        #     else:
-        #         for i in range(len(left)):
-        #             if left[i] < right[i]:
-        #                 print('right order')
-        #                 break
-        #             else:
-        #                 print('wrong order')
-        #                 break
-
-
-
-
-        # # any([type(e) == list for e in left]) == False and any([type(e) == list for e in right]) == False: #both parts lists
-
-
-    
-        # print('====')
+    packets = [eval(packet) for pair in data for packet in pair] + [[[2]]] + [[[6]]]
+    packets = bubble_sort(packets)
+    print((packets.index([[2]]) + 1) * (packets.index([[6]]) + 1)) #part 2
