@@ -1,11 +1,11 @@
 import os
 import re
-
+import time
 
 def read_input():
     dir = os.path.dirname(__file__)
-    lines = open(dir + '\input_test.txt', 'r').read().split('\n')
-    lines = [list(map(int, re.findall('[xy]=(-*\d+)', line))) for line in lines]
+    lines = open(dir + '\input.txt', 'r').read().split('\n')
+    lines = [tuple(map(int, re.findall('[xy]=(-*\d+)', line))) for line in lines]
     return lines
 
 
@@ -13,7 +13,7 @@ def manhattan_distance(x1, y1, x2, y2) -> int:
     return abs(x1 - x2) + abs(y1 - y2)
 
 
-def sensor_perimiter(sensor, distance) -> set:
+def sensor_perimiter(sensor, distance, coord) -> set:
     sensor_x, sensor_y, _, _ = [*sensor]
     x = list(range(sensor_x - distance - 1, sensor_x + distance + 2)) + \
             list(range(sensor_x + distance, sensor_x - distance - 1, -1))
@@ -22,17 +22,25 @@ def sensor_perimiter(sensor, distance) -> set:
             list(range(sensor_y - distance, sensor_y + distance + 1)) + \
                 list(range(sensor_y + distance + 1, sensor_y, -1))
 
-    return list(zip(x, y))
+    # perimiter = set(zip(x, y))
+    return set([point for point in zip(x, y) if point_in_range(point, coord)])
+
+
+def point_in_range(point: set, max_coord: int) -> bool:
+    x, y = [*point]
+    return all([x >= 0, x < max_coord, y >= 0, y < max_coord])
 
 
 if __name__ == '__main__':
-    sensors = read_input()
+    SENSORS = read_input()
+    SENSORS = {sensor: manhattan_distance(*sensor) for sensor in SENSORS}
 
-    TARGET_ROW = 10
+    TARGET_ROW = 2000000
     COVERED_POSITIONS = set()
 
-    for sensor in sensors:
-        distance_to_beacon = manhattan_distance(*sensor)
+    
+    for sensor in SENSORS:
+        distance_to_beacon = SENSORS[sensor]
         sensor_x, sensor_y, beacon_x, beacon_y = [*sensor]
 
         if TARGET_ROW in range(sensor_y - distance_to_beacon, sensor_y + distance_to_beacon):
@@ -43,6 +51,21 @@ if __name__ == '__main__':
             COVERED_POSITIONS.add(x_coverage_start)
             COVERED_POSITIONS.add(x_coverage_end)
 
-        print(sensor_x, sensor_y, distance_to_beacon, sensor_perimiter(sensor, distance_to_beacon))
+    distress_beacon = None
+    for sensor in SENSORS:
+        perimiter = sensor_perimiter(sensor, distance_to_beacon, 2 * TARGET_ROW)
+
+        for point in perimiter:
+            for s in SENSORS:
+                d = manhattan_distance(*point, *s[:2]) 
+                if d <= SENSORS[s]:    
+                    beacon = None
+                    break
+                beacon = point
+
+            if beacon is not None:
+                distress_beacon = beacon
+                break
 
     print(max(COVERED_POSITIONS) - min(COVERED_POSITIONS)) #part 1
+    print(distress_beacon[0] * 4000000 + distress_beacon[1]) #part 2
