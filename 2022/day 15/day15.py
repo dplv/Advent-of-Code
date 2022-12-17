@@ -1,6 +1,6 @@
 import os
 import re
-import time
+
 
 def read_input():
     dir = os.path.dirname(__file__)
