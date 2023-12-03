@@ -1,4 +1,8 @@
-.env
+
 test.txt
 2020/
 2023/dall e
+
+# pipenv
+Pipfile
+Pipfile.lock
