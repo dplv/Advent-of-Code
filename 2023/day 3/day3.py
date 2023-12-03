@@ -23,7 +23,7 @@ def solution(data: list) -> list:
             if not match.group().isdigit():
                 SYMBOLS.add(l * L + match.start())
                 if match.group() == '*':
-                    GEARS[l * L + match.start()] = (0, 0)
+                    GEARS[l * L + match.start()] = -1
             else:
                 NUMBERS[(l * L + match.start(), l * L + match.end() - 1)] = int(match.group())
 
@@ -32,11 +32,9 @@ def solution(data: list) -> list:
             if x in SYMBOLS: 
                 sum_p1 += NUMBERS[n]
             if x in GEARS:
-                if GEARS[x][0] == 0: GEARS[x] = (NUMBERS[n], GEARS[x][1])
-                else: GEARS[x] = (GEARS[x][0], NUMBERS[n])
+                if GEARS[x] < 0: GEARS[x] = NUMBERS[n]
+                else: sum_p2 += GEARS[x] *  NUMBERS[n]
 
-    sum_p2 = sum([part[0] * part[1] for part in GEARS.values()])
-    
     return sum_p1, sum_p2
 
 
