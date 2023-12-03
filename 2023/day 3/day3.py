@@ -8,7 +8,7 @@ def get_file():
     return file.readlines()
 
 
-def solution(data: list) -> list:
+def solution(data: list) -> tuple:
     SYMBOLS = set()
     NUMBERS = dict()
     GEARS = dict()
@@ -17,7 +17,7 @@ def solution(data: list) -> list:
     sum_p1 = sum_p2 = 0
 
     for l, line in enumerate(data):
-        matches = re.finditer(r'(\d+|[^.\n])', line, re.MULTILINE)
+        matches = re.finditer(r'(\d+|[^.\n])', line)
 
         for match in matches:
             if not match.group().isdigit():
