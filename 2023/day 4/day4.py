@@ -5,7 +5,9 @@ import re
 def get_file() -> list:
     __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
     file = open(__location__ + os.sep + 'input.txt')
-    return file.readlines()
+    data = file.read()
+    file.close()
+    return data.split('\n')
 
 
 def solution(data: list) -> (int, int):
