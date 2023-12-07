@@ -10,42 +10,57 @@ def get_file() -> list:
     return data.split('\n')
 
 
-def get_hand_strength(hand: tuple[str, str]) -> int:
-    order = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
-    cards, bin = hand
+def get_hand_strength(hand: tuple[str, str], order: list) -> int:
+    cards, _ = hand
     type = [cards.count(s) for s in set(cards)]
-    value = sum([order.index(s) for s in cards])
+
     if len(type) == 1:
-        return 7 * 1000 + value
+        x = 700
     elif max(type) == 4:
-        return 6 * 1000 + value
+        x = 600
     elif len(type) == 2:
-        return 5 * 1000 + value
+        x = 500
     elif len(type) == 3 and max(type) == 3:
-        return 4 * 1000 + value
+        x = 400
     elif len(type) == 3 and max(type) == 2:
-        return 3 * 1000 + value
+        x = 300
     elif len(type) == 4 and max(type) == 2:
-        return 2 * 1000 + value
+        x = 200
     elif len(type) == 5:
-        return 1 * 1000 + value
+        x = 100
+
+    return [x] + [order.index(s) for s in cards]
 
 
-def solution(data: list) -> (int, int):
+def part1(data: list) -> (int, int):
+    order = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
     hands = [tuple(d.split()) for d in data]
-    print(hands)
-    for h in hands:
-        print(h, get_hand_strength(h))
-    print('-' * 15)
-    hands = sorted(hands, key = lambda x: get_hand_strength(x))
-    for h in hands:
-        print(h, get_hand_strength(h))
-    # print([get_hand_strength(h) for h in hands])
-    # hands = hands.sort(key=get_hand_strength)
-    return
+    hands = sorted(hands, key = lambda x: get_hand_strength(x, order))
+    return sum([int(hand[1]) * (rank + 1) for rank, hand in enumerate(hands)])
+
+
+def part2(data: list) -> (int, int):
+    order = ['J', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'Q', 'K', 'A']
+    hands = [d.split() for d in data]
+
+    for i, hand in enumerate(hands):
+        if hand[0].find('J') > -1:
+            strength = 0
+            for card in order[1:]:
+                temp_hand = hand[0].replace('J', card)
+                strength = max(strength, get_hand_strength((temp_hand, hand[1]), order)[0])
+            true_strength = get_hand_strength(hand, order)
+            final_strength = [strength] + true_strength[1:]
+        else:
+            final_strength = get_hand_strength(hand, order)
+        hands[i] = (hand[0], hand[1], final_strength)
+
+    hands = sorted(hands, key = lambda x: x[2])
+    return sum([int(hand[1]) * (rank + 1) for rank, hand in enumerate(hands)])
 
 
 if __name__ == '__main__':
     input = get_file()
 
-    print(solution(input))
+    print(part1(input))
+    print(part2(input))
