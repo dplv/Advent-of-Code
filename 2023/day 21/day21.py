@@ -1,5 +1,5 @@
 import os
-import numpy as np
+
 
 def get_file() -> list:
     __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
@@ -46,8 +46,12 @@ def explore(map: dict, start: set, max_steps):
         d += 1
         for n in map[m]:
             if n not in visited:
-                visited.append(n)
+                visited.append((n, max_steps))
 
+    if max_steps == 1:
+        print(visited)
+
+    visited = [v[0] for v in visited]
     reach = explore(map, set(visited), max_steps - 1)
 
     return reach
@@ -67,15 +71,3 @@ if __name__ == '__main__':
         - 26501365 = 202300 * 131 + 65 where 131 is the dimension of the grid
     """
 
-    # polynomial extrapolation
-    a0 = explore(map, (source, ), 65)
-    a1 = explore(map, (source, ), 65 + 131)
-    a2 = explore(map, (source, ), 65 + 2 * 131)
-
-    vandermonde = np.matrix([[0, 0, 1], [1, 1, 1], [4, 2, 1]])
-    b = np.array([a0, a1, a2])
-    x = np.linalg.solve(vandermonde, b).astype(np.int64)
-
-    # note that 26501365 = 202300 * 131 + 65 where 131 is the dimension of the grid
-    n = 202300
-    print("part 2:", x[0] * n * n + x[1] * n + x[2]) #74523846505198 too low
